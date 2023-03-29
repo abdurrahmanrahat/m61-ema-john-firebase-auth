@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { addToDb, getShoppingCart } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
@@ -14,12 +15,19 @@ const Shop = () => {
         .then(data => setProducts(data))
     }, []);
 
+    useEffect( () => {
+        const storedCart = getShoppingCart;
+        // console.log(storedCart);
+    }, []) 
+
     const handlerAddToCart = (product) => {
         // console.log(product);
         // React JS এ array তে push করা যায় না, নতুন array বানিয়ে পাঠানো লাগে set function এ।
         const newCart = [...cart, product];
         setCart(newCart);
 
+        // এই function টা just id parameter হিসেবে নিবে। 
+        addToDb(product.id)
     }
 
     return (

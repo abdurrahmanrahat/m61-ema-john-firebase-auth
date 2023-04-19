@@ -1,21 +1,16 @@
-.cart-title {
-    font-weight: 400;
-    font-size: 25px;
-    text-align: center;
-}
-
 .cart {
     background-color: rgba(255, 153, 0, 0.3);
     padding: 25px;
     position: sticky;
-    top: 0; /* where */
+    top: 0;
 }
 
-.cart p {
-    font-size: 17px;
-}
-
-.cart h6 {
-    font-size: 22px;
-    font-weight: 500;
+.btn-clear-cart {
+    background: #FF3030;
+    width: 90%;
+    margin: 10px auto;
+    color: #fff;
+    border-radius: 4px;
+    display: flex;
+    justify-content: space-between;
 }

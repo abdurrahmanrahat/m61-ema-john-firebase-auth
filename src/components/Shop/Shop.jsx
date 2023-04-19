@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { addToDb, getShoppingCart } from '../../utilities/fakedb';
+import { addToDb, deleteShoppingCart, getShoppingCart } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css';
+import { Link } from 'react-router-dom';
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState([]);
+    const [cart, setCart] = useState([])
 
     useEffect(() => {
-        // fetch url
         fetch('products.json')
             .then(res => res.json())
             .then(data => setProducts(data))
@@ -17,65 +17,50 @@ const Shop = () => {
 
     useEffect(() => {
         const storedCart = getShoppingCart();
-        let savedCart = [];
-
-        // step 01- get id
+        const savedCart = [];
+        // step 1: get id of the addedProduct
         for (const id in storedCart) {
-            // step 02- (get the product using id) find with products for checking weather id is matched or not.
+            // step 2: get product from products state by using id
             const addedProduct = products.find(product => product.id === id)
-            // step 03- get quantity of the product
             if (addedProduct) {
+                // step 3: add quantity
                 const quantity = storedCart[id];
                 addedProduct.quantity = quantity;
-                // step 04- add the addedProduct to the savedCart
+                // step 4: add the added product to the saved cart
                 savedCart.push(addedProduct);
             }
-            // step 05- set the cart
-            setCart(savedCart);
-            console.log(addedProduct);
+            // console.log('added Product', addedProduct)
         }
+        // step 5: set the cart
+        setCart(savedCart);
     }, [products])
 
-    
-    const handlerAddToCart = (product) => {
-        // console.log(product);
-        // React JS এ array তে push করা যায় না, নতুন array বানিয়ে পাঠানো লাগে set function এ।
-        const newCart = [...cart, product];
-        setCart(newCart);
-
-
-        // এই function টা just id parameter হিসেবে নিবে।
-        addToDb(product.id)
-    }
-    
-
-
-    /*
-    const handlerAddToCart = (product) => {
-        // console.log(product);
-        // React JS এ array তে push করা যায় না, নতুন array বানিয়ে পাঠানো লাগে set function এ।
+    const handleAddToCart = (product) => {
+        // cart.push(product); '
         let newCart = [];
-
-
+        // const newCart = [...cart, product];
         // if product doesn't exist in the cart, then set quantity = 1
-        // if exist , update quantity by 1
+        // if exist update quantity by 1
         const exists = cart.find(pd => pd.id === product.id);
         if (!exists) {
             product.quantity = 1;
-            // newCart = [...Cart, product];
-            newCart = [...Cart, product]
+            newCart = [...cart, product]
         }
         else {
             exists.quantity = exists.quantity + 1;
             const remaining = cart.filter(pd => pd.id !== product.id);
             newCart = [...remaining, exists];
         }
-        // এই function টা just id parameter হিসেবে নিবে।
+
+        setCart(newCart);
         addToDb(product.id)
     }
-    */
 
 
+    const handleClearCart = () => {
+        setCart([]);
+        deleteShoppingCart();
+    }
 
     return (
         <div className='shop-container'>
@@ -84,12 +69,19 @@ const Shop = () => {
                     products.map(product => <Product
                         key={product.id}
                         product={product}
-                        handlerAddToCart={handlerAddToCart}
+                        handleAddToCart={handleAddToCart}
                     ></Product>)
                 }
             </div>
             <div className="cart-container">
-                <Cart cart={cart}></Cart>
+                <Cart
+                    cart={cart}
+                    handleClearCart={handleClearCart}
+                >
+                    <Link className='proceed-link' to="/orders">
+                        <button className='btn-proceed'>Review Order</button>
+                    </Link>
+                </Cart>
             </div>
         </div>
     );
